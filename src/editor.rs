@@ -144,6 +144,7 @@ impl Editor {
         } else if moved {
           editor.move_cursor(Key::Left);
         }
+        editor.document.highlight(Some(query));
       })
       .unwrap_or(None);
 
@@ -151,6 +152,7 @@ impl Editor {
       self.cursor_position = old_position;
       self.scroll();
     }
+    self.document.highlight(None);
   }
   fn process_keypress(&mut self) -> Result<(), std::io::Error> {
     let pressed_key = Terminal::read_key()?;
@@ -333,7 +335,8 @@ impl Editor {
       modified_indicator
     );
     let line_indicator = format!(
-      "{}/{}",
+      "{} | {}/{}",
+      self.document.file_type(),
       self.cursor_position.y.saturating_add(1),
       self.document.len()
     );
